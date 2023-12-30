@@ -1,7 +1,7 @@
 /**
  * @file ScoreBoard.h
  *
- * @author Abhi Rao
+ * @author Peyton Nagher
  *
  * Base class for ScoreBoard
  */

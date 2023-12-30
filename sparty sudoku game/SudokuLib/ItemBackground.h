@@ -1,6 +1,6 @@
 /**
  * @file ItemBackground.h
- * @author Ethan Egger
+ * @author Peyton Nagher
  *
  *
  */

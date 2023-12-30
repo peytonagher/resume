@@ -1,6 +1,6 @@
 /**
  * @file Sudoku.cpp
- * @author Peyton Nagher, Ben Toaz
+ * @author Peyton Nagher
  *
  * Equivalent to generic game class in examples plus virtual pixels
  */

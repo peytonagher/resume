@@ -1,7 +1,7 @@
 /**
  * @file Visitor.h
  *
- * @author Peyton Nagher, Ben Toaz
+ * @author Peyton Nagher
  *
  * Visitor Base Class
  */

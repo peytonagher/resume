@@ -1,6 +1,6 @@
 /**
  * @file MainFrame.h
- * @author Peyton Nagher, Stefan Lemke
+ * @author Peyton Nagher
  *
  * Create base frame for sudoku GUI
  */

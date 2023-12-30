@@ -1,7 +1,6 @@
 /**
  * @file MainFrame.cpp
  * @author Peyton Nagher
- * @author Ben Toaz, Stefan Lemke
  *
  * Create base frame for sudoku GUI
  */

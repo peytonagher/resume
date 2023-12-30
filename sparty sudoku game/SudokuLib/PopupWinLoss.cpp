@@ -1,7 +1,7 @@
 /**
  * @file PopupWinLoss.cpp
  *
- * @author Stefan Lemke, Ethan Egger
+ * @author Peyton Nagher
  */
 
 #include "pch.h"

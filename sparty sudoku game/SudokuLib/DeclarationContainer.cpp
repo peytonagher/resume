@@ -1,7 +1,7 @@
 /**
  * @file DeclarationContainer.cpp
  *
- * @author Ethan Egger
+ * @author Peyton Nagher
  *
  */
 

@@ -1,7 +1,7 @@
 /**
  * @file PopupFull.h
  *
- * @author Stefan Lemke, Ethan Egger
+ * @author Peyton Nagher
  *
  * Popup class for when sparty is full
  */

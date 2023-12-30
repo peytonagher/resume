@@ -1,6 +1,6 @@
 /**
  * @file pch.h
- * @author Stefan Lemke
+ * @author Peyton Nagher
  */
 
 #ifndef Sudoku_PCH_H

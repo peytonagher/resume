@@ -1,7 +1,7 @@
 /**
  * @file ContainerVisitor.h
  *
- * @author Ethan Egger, Peyton Nagher
+ * @author Peyton Nagher
  *
  * This class represents a visitor for a cauldron or pumpkin
  */

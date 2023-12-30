@@ -1,6 +1,6 @@
 /**
  * @file SolveVisitor.cpp
- * @author Ben Toaz
+ * @author Peyton Nagher
  *
  * Visitor to move digits during auto solve
  */

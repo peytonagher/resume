@@ -1,6 +1,5 @@
 from z3 import *
 
-
 # 3 x 3
 def three():
 
@@ -35,7 +34,6 @@ def three():
 
 
 def main():
-    print("\nCSE260 programming project")
     print("\nn = 3:")
     three()
     print("\n")

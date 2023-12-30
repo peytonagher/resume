@@ -1,7 +1,7 @@
 /**
  * @file DeclarationEnemy.cpp
  *
- * @author Abhi Rao
+ * @author Peyton Nagher
  *
  */
 

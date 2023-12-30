@@ -1,7 +1,3 @@
-"""
-Project 4 - Hybrid Sorting - Tests
-"""
-
 import unittest
 from collections import Counter
 from itertools import combinations

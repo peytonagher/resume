@@ -1,6 +1,6 @@
 /**
  * @file ItemEnemy.cpp
- * @author Abhi Rao
+ * @author Peyton Nagher
  *
  * Pursuer for Sparty
  */

@@ -1,6 +1,6 @@
 /**
  * @file ids.h
- * @author Stefan Lemke
+ * @author Peyton Nagher
  *
  * IDS for levels and timer
  */

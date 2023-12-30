@@ -1,7 +1,7 @@
 /**
  * @file DeclarationEnemy.h
  *
- * @author Abhi Rao
+ * @author Peyton Nagher
  *
  * Class to represent a enemy declaration, derived from Declaration
  */

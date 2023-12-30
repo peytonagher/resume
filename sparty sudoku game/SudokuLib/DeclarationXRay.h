@@ -1,7 +1,7 @@
 /**
  * @file DeclarationXRay.h
  *
- * @author Ethan Egger
+ * @author Peyton Nagher
  *
  * Class to represent a X-Ray stomach declaration
  */

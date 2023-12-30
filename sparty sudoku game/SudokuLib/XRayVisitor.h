@@ -1,6 +1,6 @@
 /**
  * @file XRayVisitor.h
- * @author Ethan Egger
+ * @author Peyton Nagher
  *
  * Class defining a visitor to find the XRay item
  */

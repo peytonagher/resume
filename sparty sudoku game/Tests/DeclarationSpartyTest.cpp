@@ -1,6 +1,6 @@
 /**
  * @file DeclarationSpartyTest.cpp
- * @author ethan
+ * @author Peyton Nagher
  */
 
 #include <pch.h>

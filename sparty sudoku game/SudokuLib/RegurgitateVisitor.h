@@ -1,7 +1,7 @@
 /**
  * @file RegurgitateVisitor.h
  *
- * @author Ben Toaz, Peyton Nagher
+ * @author Peyton Nagher
  *
  * Similar to eat visitor for sudoku during sparty move mouth, but in reverse.
  */

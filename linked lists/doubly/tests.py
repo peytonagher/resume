@@ -1,11 +1,3 @@
-"""
-Project 2
-CSE 331 S23 (Onsay)
-Authored By: Matt Kight & Lukas Richters & Sai Ramesh
-Originally Authored By: Andrew McDonald, Alex Woodring & Andrew Haas
-tests.py
-"""
-
 from solution import DLL, Node, dream_escaper
 from typing import TypeVar, List
 from random import seed, randint, shuffle

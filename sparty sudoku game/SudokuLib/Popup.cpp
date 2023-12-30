@@ -1,6 +1,6 @@
 /**
  * @file Popup.cpp
- * @author Stefan Lemke
+ * @author Peyton Nagher
  *
  * Popup drawing class
  */

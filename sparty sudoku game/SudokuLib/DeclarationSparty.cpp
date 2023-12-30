@@ -1,7 +1,7 @@
 /**
  * @file DeclarationSparty.cpp
  *
- * @author Peyton Nagher, Ethan Egger
+ * @author Peyton Nagher
  *
  */
 

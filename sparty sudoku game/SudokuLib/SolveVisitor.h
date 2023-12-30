@@ -1,6 +1,6 @@
 /**
  * @file SolveVisitor.h
- * @author Ben Toaz
+ * @author Peyton Nagher
  *
  * Visitor to auto solve level
  */

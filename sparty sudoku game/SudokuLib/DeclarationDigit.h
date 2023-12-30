@@ -1,7 +1,7 @@
 /**
  * @file DeclarationDigit.h
  *
- * @author Ethan Egger, Peyton Nagher
+ * @author Peyton Nagher
  *
  * Digit info from XML
  */

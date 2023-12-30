@@ -1,7 +1,6 @@
 /**
  * @file ItemXRay.cpp
  * @author Peyton Nagher
- * @author Ben Toaz
  */
 
 #include "pch.h"

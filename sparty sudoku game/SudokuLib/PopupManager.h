@@ -1,7 +1,7 @@
 /**
  * @file PopupManager.h
  *
- * @author Stefan Lemke, Ethan Egger
+ * @author Peyton Nagher
  *
  * Class responsible for initializing and storing Popups
  */

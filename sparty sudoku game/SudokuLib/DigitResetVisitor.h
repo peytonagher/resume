@@ -1,7 +1,7 @@
 /**
  * @file DigitResetVisitor.h
  *
- * @author Ben Toaz
+ * @author Peyton Nagher
  *
  * Visitor to set all digit isMoved flags back to false after solve
  */

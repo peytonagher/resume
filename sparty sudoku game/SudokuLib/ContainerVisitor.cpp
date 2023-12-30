@@ -1,7 +1,7 @@
 /**
  * @file ContainerVisitor.cpp
  *
- * @author Ethan Egger, Peyton Nagher
+ * @author Peyton Nagher
  *
  * Go through items, release digits during sparty headbutt
  */

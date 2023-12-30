@@ -1,3 +1,4 @@
+#include "sudoku.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -14,7 +15,6 @@
 #include <set>
 #include <utility>
 #include <tuple>
-#include "sudoku.hpp"
 using std::cin; using std::cout; using std::istream; using std::ostream; 
 using std::endl; using std::fixed; using std::string; using std::to_string; 
 using std::replace; using std::vector; using std::setprecision; 
@@ -26,7 +26,6 @@ using std::accumulate; using std::invalid_argument; using std::map;
 using std::multimap; using std::set; using std::pair; using std::tuple; 
 using std::make_tuple; using std::tie;
 
-// TO DO: add implementation of SudokuGame and SudokuPlayer methods here.
 
 SudokuGame::SudokuGame(string filename) {
     
@@ -40,7 +39,6 @@ SudokuGame::SudokuGame(string filename) {
     istringstream iss(text);
 
     generate(lines.begin(), lines.end(), [& iss]() {
-        
         string str;
         getline(iss, str, '\n');
         return str;
@@ -50,13 +48,11 @@ SudokuGame::SudokuGame(string filename) {
     vector<vector<int>> newgrid;
 
     transform(lines.begin(), lines.end(), back_inserter(newgrid), [] (const string & line) {
-
         int n = count(line.begin(), line.end(), ',') + 1;
         vector<int> cols(n);
         istringstream iss(line);
 
         generate(cols.begin(), cols.end(), [& iss] () {
-
             string str;
             getline(iss, str, ',');
 
@@ -74,24 +70,6 @@ SudokuGame::SudokuGame(string filename) {
     input.close();
     grid_ = newgrid;
 }
-
-
-
-SudokuGame::SudokuGame(const SudokuGame & obj) { 
-    grid_ = obj.grid_; 
-}
-
-
-
-SudokuGame & SudokuGame::operator=(const SudokuGame & obj) {
-    grid_ = obj.grid_;
-    return *this;
-}
-
-
-
-SudokuGame::~SudokuGame() { grid_.clear(); }
-
 
 
 const vector<vector<int>>& SudokuGame::grid() const { 
@@ -126,23 +104,33 @@ void SudokuGame::print() const {
 }
 
 
-
 int SudokuGame::size() const {
     return grid_.size();
 }
 
 
-
-int SudokuGame::value(int row, int column) const {
+int SudokuGame::getValue(int row, int column) const {
     return grid_[row][column];
 }
 
 
-
-void SudokuGame::value(int row, int column, int newValue) {
+void SudokuGame::setValue(int row, int column, int newValue) {
     grid_[row][column] = newValue;
 }
 
+
+SudokuGame::~SudokuGame() { grid_.clear(); }
+
+
+SudokuGame::SudokuGame(const SudokuGame & obj) { 
+    grid_ = obj.grid_; 
+}
+
+
+SudokuGame & SudokuGame::operator=(const SudokuGame & obj) {
+    grid_ = obj.grid_;
+    return *this;
+}
 
 
 tuple<int, int> SudokuPlayer::isValidSpot(const SudokuGame & game) const {
@@ -151,7 +139,7 @@ tuple<int, int> SudokuPlayer::isValidSpot(const SudokuGame & game) const {
         
         for (int j = 0; j < game.size(); ++j) {
 
-            if (game.value(i, j) == 0) {
+            if (game.getValue(i, j) == 0) {
                 return make_tuple(i, j);
             }
 
@@ -161,7 +149,6 @@ tuple<int, int> SudokuPlayer::isValidSpot(const SudokuGame & game) const {
 
     return make_tuple(-1, -1);
 }
-
 
 
 bool SudokuPlayer::solve(SudokuGame & game) {
@@ -179,13 +166,13 @@ bool SudokuPlayer::solve(SudokuGame & game) {
 
         for (int j = 0; j < game.size() && valid; ++j) {
 
-            valid = (num != game.value(j, col)); // check other cells in col
+            valid = (num != game.getValue(j, col)); // check other cells in col
 
         }
 
         for (int j = 0; j < game.size() && valid; ++j) {
 
-            valid = (num != game.value(row, j)); // check other cells in row
+            valid = (num != game.getValue(row, j)); // check other cells in row
 
         }
 
@@ -196,22 +183,23 @@ bool SudokuPlayer::solve(SudokuGame & game) {
 
             for (int j = 0; j < 3 && valid; ++j) {
 
-                valid = (num != game.value(rowNext + i, colNext + j));
+                valid = (num != game.getValue(rowNext + i, colNext + j));
 
             }
 
         }
 
         if (valid) {
-            game.value(row, col, num);
+            game.setValue(row, col, num);
 
             if (solve(game)) {
                 return true;
             }
 
             else {
-                game.value(row, col, 0);
+                game.setValue(row, col, 0);
             }
+
         }
 
     }
@@ -220,9 +208,7 @@ bool SudokuPlayer::solve(SudokuGame & game) {
 }
 
 
-
 int main() {
-
     SudokuGame game("sudoku_game_1.csv");
     cout << endl << "Puzzle" << endl << endl;
     game.print();

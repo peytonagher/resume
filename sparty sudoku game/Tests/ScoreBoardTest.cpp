@@ -1,6 +1,6 @@
 /**
  * @file ScoreBoardTest.cpp
- * @author Abhi Rao
+ * @author Peyton Nagher
  */
 
 #include <pch.h>

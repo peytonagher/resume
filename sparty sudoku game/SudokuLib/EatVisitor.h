@@ -1,7 +1,7 @@
 /**
  * @file EatVisitor.h
  *
- * @author Ben Toaz
+ * @author Peyton Nagher
  *
  * Visit sudoku, move digits sparty eats to xray
  */

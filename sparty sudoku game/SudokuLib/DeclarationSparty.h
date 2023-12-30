@@ -1,7 +1,7 @@
 /**
  * @file DeclarationSparty.h
  *
- * @author Peyton Nagher, Ethan Egger
+ * @author Peyton Nagher
  *
  * Declaration class that holds specific values for Sparty
  */

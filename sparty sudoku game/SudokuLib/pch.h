@@ -1,6 +1,6 @@
 /**
  * @file pch.h
- * @author Ben toaz
+ * @author Peyton Nagher
  *
  * Precompiled headers for library
  */

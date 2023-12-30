@@ -1,7 +1,6 @@
 from z3 import *
 import numpy as np
 
-
 # n x n 
 def nxn(n):
     mySolver = Solver()
@@ -87,7 +86,6 @@ def nxn(n):
 
 
 def main():
-    print("\nCSE260 programming project")
     n = input("\nn = ?: ")
     input_n = "\nn = {n}: "
     print(input_n.format(n=n))

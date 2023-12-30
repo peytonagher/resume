@@ -1,7 +1,7 @@
 /**
  * @file Popup.h
  *
- * @author Stefan Lemke, Ethan Egger
+ * @author Peyton Nagher
  */
 
 #ifndef PROJECT1_SUDOKULIB_POPUP_H

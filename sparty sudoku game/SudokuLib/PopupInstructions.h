@@ -1,7 +1,7 @@
 /**
  * @file PopupInstructions.h
  *
- * @author Stefan Lemke, Ethan Egger
+ * @author Peyton Nagher
  *
  * Popup class describing game instructions
  */

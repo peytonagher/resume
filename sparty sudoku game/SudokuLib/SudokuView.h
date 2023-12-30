@@ -1,6 +1,6 @@
 /**
  * @file SudokuView.h
- * @author Peyton Nagher, Ben Toaz, Stefan Lemke
+ * @author Peyton Nagher
  *
  * User interactions with mainframe GUI
  */

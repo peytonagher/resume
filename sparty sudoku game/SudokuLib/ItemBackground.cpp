@@ -1,7 +1,7 @@
 /**
  * @file ItemBackground.cpp
  *
- * @author Ethan Egger
+ * @author Peyton Nagher
  */
 
 #include "pch.h"

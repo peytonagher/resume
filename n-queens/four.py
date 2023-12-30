@@ -1,6 +1,5 @@
 from z3 import *
 
-
 # 4 x 4
 def four():
 
@@ -58,7 +57,6 @@ def four():
 
 
 def main():
-    print("\nCSE260 programming project")
     print("\nn = 4:")
     four()
     print("\n")
@@ -66,3 +64,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    

@@ -1,6 +1,6 @@
 /**
  * @file ItemSparty.cpp
- * @author Peyton Nagher, Stefan Lemke
+ * @author Peyton Nagher
  */
 
 #include "pch.h"

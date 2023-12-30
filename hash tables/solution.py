@@ -1,10 +1,3 @@
-"""
-Hash Table Project
-CSE 331 SS23 (Onsay)
-Peyton Nagher
-solution.py
-"""
-
 from typing import TypeVar, List, Tuple
 
 T = TypeVar("T")

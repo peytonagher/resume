@@ -1,7 +1,7 @@
 /**
  * @file DeclarationDigit.cpp
  *
- * @author Ethan Egger, Peyton Nagher
+ * @author Peyton Nagher
  *
  */
 

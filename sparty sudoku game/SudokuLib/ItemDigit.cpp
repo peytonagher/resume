@@ -1,6 +1,6 @@
 /**
  * @file ItemDigit.cpp
- * @author Peyton Nagher, Abhi Rao
+ * @author Peyton Nagher
  *
  */
 

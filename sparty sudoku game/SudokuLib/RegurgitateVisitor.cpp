@@ -1,7 +1,7 @@
 /**
  * @file RegurgitateVisitor.cpp
  *
- * @author Ben Toaz, Peyton Nagher
+ * @author Peyton Nagher
  *
  * Functionality for moving digit from xray to play area
  */

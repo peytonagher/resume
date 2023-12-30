@@ -1,6 +1,6 @@
 /**
  * @file PopupInstructions.cpp
- * @author Ethan Egger
+ * @author Peyton Nagher
  */
 
 #include "pch.h"

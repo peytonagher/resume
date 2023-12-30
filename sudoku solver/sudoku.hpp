@@ -20,7 +20,6 @@ using std::string; using std::vector; using std::tuple;
 
 
 class SudokuGame {
-    // TO DO: define your own private members/methods as needed
     private:
         vector<vector<int>> grid_;
 
@@ -31,8 +30,8 @@ class SudokuGame {
         const vector<vector<int>> & grid() const;
         void print() const;
         int size() const;
-        int value(int row, int column) const;
-        void value(int row, int column, int newValue);
+        int getValue(int row, int column) const;
+        void setValue(int row, int column, int newValue);
 
         // TO DO: include "rule of three": 
         //          destructor
@@ -46,7 +45,6 @@ class SudokuGame {
 
 
 class SudokuPlayer {
-    // TO DO: define your own private members/methods as needed
     private:
         tuple<int, int> isValidSpot(const SudokuGame &) const;
 

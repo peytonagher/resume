@@ -1,6 +1,6 @@
 /**
  * @file main.cpp
- * @author Stefan Lemke
+ * @author Peyton Nagher
  *
  * Launch point for application
  */

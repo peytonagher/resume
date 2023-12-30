@@ -1,7 +1,7 @@
 /**
  * @file SudokuApp.h
  *
- * @author Peyton Nagher, Ben Toaz, Stefan Lemke, Ethan Egger, Abhi Rhao
+ * @author Peyton Nagher
  *
  * App class
  */

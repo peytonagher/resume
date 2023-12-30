@@ -1,6 +1,6 @@
 /**
  * @file PopupWinLoss.h
- * @author Stefan Lemke, Ethan Egger
+ * @author Peyton Nagher
  *
  * Popup Class for Win/Loss state
  */

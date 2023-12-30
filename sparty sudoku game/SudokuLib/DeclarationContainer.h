@@ -1,6 +1,6 @@
 /**
  * @file DeclarationContainer.h
- * @author Ethan Egger
+ * @author Peyton Nagher
  *
  * Container metadata from XML
  */

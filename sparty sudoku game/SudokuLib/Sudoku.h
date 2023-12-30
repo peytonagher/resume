@@ -1,6 +1,6 @@
 /**
  * @file Sudoku.h
- * @author Peyton Nagher, Ben Toaz
+ * @author Peyton Nagher
  *
  * Class to represent the Sudoku game and its virtual pixels
  */

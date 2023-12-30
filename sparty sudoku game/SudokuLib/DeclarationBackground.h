@@ -1,7 +1,7 @@
 /**
  * @file DeclarationBackground.h
  *
- * @author Ethan Egger
+ * @author Peyton Nagher
  *
  * Image metadata from XML
  */

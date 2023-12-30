@@ -1,6 +1,6 @@
 /**
  * @file SudokuTest.cpp
- * @author Ben Toaz
+ * @author Peyton Nagher
  *
  * Make sure that the app is functioning properly
  */

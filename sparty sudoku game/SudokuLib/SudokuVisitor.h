@@ -1,7 +1,7 @@
 /**
  * @file SudokuVisitor.h
  *
- * @author Ben Toaz
+ * @author Peyton Nagher
  *
  * Visitor class for the Sudoku board
  */

@@ -1,7 +1,7 @@
 /**
  * @file ScoreBoard.cpp
  *
- * @author Abhi Rao
+ * @author Peyton Nagher
  *
  * Functions that support ScoreBoard
  */

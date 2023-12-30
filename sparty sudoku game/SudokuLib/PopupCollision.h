@@ -1,7 +1,7 @@
 /**
  * @file PopupCollision.h
  *
- * @author Stefan Lemke, Ethan Egger
+ * @author Peyton Nagher
  *
  * Popup class for occupied tiles
  */

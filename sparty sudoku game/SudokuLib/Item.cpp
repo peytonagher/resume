@@ -1,6 +1,6 @@
 /**
  * @file Item.cpp
- * @author Peyton Nagher, Ben Toaz
+ * @author Peyton Nagher
  *
  * Implementation file for Item class
  */

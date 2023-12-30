@@ -1,7 +1,6 @@
 /**
  * @file Level.cpp
  * @author Peyton Nagher
- * @author Ethan Egger
  */
 
 #include "pch.h"

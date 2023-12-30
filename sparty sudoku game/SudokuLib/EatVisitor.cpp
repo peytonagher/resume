@@ -1,6 +1,6 @@
 /**
  * @file EatVisitor.cpp
- * @author Ben Toaz
+ * @author Peyton Nagher
  *
  * Handles all eating functionality for sparty outside of animations.
  * Is actually visiting all items in sudoku to get needed info and manipulate

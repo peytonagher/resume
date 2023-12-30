@@ -1,6 +1,6 @@
 /**
  * @file PopupCaught.cpp
- * @author Stefan Lemke
+ * @author Peyton Nagher
  *
  * Popup class describing caught state
  *

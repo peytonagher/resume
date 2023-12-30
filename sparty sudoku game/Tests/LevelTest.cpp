@@ -1,6 +1,6 @@
 /**
  * @file LevelTest.cpp
- * @author ethan
+ * @author Peyton Nagher
  */
 
 #include <pch.h>

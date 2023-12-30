@@ -1,6 +1,6 @@
 /**
  * @file ItemEnemy.h
- * @author Abhi Rao
+ * @author Peyton Nagher
  *
  * Class that represents our enemy Dr. Owen
  */

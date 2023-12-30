@@ -1,6 +1,6 @@
 /**
  * @file Item.h
- * @author Peyton Nagher, Ben Toaz
+ * @author Peyton Nagher
  *
  * Base class for all item objects in the game
  */

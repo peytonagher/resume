@@ -1,7 +1,7 @@
 /**
  * @file PopupFull.cpp
  *
- * @author Ethan Egger
+ * @author Peyton Nagher
  */
 
 #include "pch.h"
