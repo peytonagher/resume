@@ -3,10 +3,27 @@ Source code for resume projects
 
 
 Included projects:
+
+AI & ML:
 - N-Queens Solver (Python)
-- Sudoku Solver (C++)
-- Singly & Doubly Linked Lists (Python)
-- 4-Bit ALU (Verilog)
-- Sorting Algorithms (Python)
+- Perceptrons (Python)
+- Search agents (Python)
+
+DSA:
 - Hash Tables (Python)
+- Linked Lists (Python)
+- Sorting Algorithms (Python)
+
+Embedded:
+- 4-Bit ALU (Verilog)
+- STM32 FDCAN Serial Communication (C)
+
+Networks:
+- SMTP Email Client (Python)
+- ICMP Pinger (Python)
+- HTTP Web Server w/ multi-threading (Python)
+
+Games & Applications (OOP):
+- Incredible Machines Animation (C++)
 - Sparty Sudoku Game (C++)
+- Sudoku Solver (C++)

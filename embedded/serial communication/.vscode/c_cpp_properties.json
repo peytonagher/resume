@@ -1,0 +1,90 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "/usr/bin/clang++",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "macos-clang-x64",
+            "compilerArgs": [
+                "-std=c++17",
+                "-ggdb",
+                "-Wall",
+                "-Wextra ",
+                "-Wpedantic",
+                "-Werror",
+                "-o a.out"
+            ],
+            "mergeConfigurations": false,
+            "browse": {
+                "path": [],
+                "limitSymbolsToIncludedHeaders": true
+            }
+        },
+        {
+            "name": "Windows",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "C:\\msys64\\mingw64\\bin\\g++.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-gcc-x64",
+            "compilerArgs": [
+                "-std=c++17",
+                "-ggdb",
+                "-Wall",
+                "-Wextra ",
+                "-Wpedantic",
+                "-Werror",
+                "-o a.exe"
+            ]
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "/home/peytonagher/undergrad/ece480/capstone/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-x64",
+            "compilerArgs": [
+                "-std=c++17",
+                "-ggdb",
+                "-Wall",
+                "-Wextra ",
+                "-Wpedantic",
+                "-Werror",
+                "-o a.out"
+            ],
+            "mergeConfigurations": false,
+            "browse": {
+                "path": [
+                    "/home/peytonagher/undergrad/ece480/capstone/**",
+                    "${workspaceFolder}"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
+        }
+    ],
+    "version": 4
+}

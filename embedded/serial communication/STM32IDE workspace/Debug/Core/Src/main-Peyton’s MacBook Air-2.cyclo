@@ -1,0 +1,15 @@
+../Drivers/CMSIS/Include/core_cm33.h:3212:26:ITM_SendChar	4
+../Core/Src/main.c:85:19:FDCAN_SendMessage	4
+../Core/Src/main.c:136:19:FDCAN_SendMessage2	4
+../Core/Src/main.c:170:6:HAL_FDCAN_RxFifo0Callback	5
+../Core/Src/main.c:212:6:HAL_FDCAN_RxFifo1Callback	6
+../Core/Src/main.c:250:5:_write	2
+../Core/Src/main.c:265:5:main	9
+../Core/Src/main.c:510:6:SystemClock_Config	4
+../Core/Src/main.c:564:13:MX_CRC_Init	2
+../Core/Src/main.c:592:13:MX_FDCAN1_Init	4
+../Core/Src/main.c:652:13:MX_FDCAN2_Init	4
+../Core/Src/main.c:714:13:MX_FLASH_Init	3
+../Core/Src/main.c:740:13:MX_ICACHE_Init	3
+../Core/Src/main.c:769:13:MX_GPIO_Init	1
+../Core/Src/main.c:867:6:Error_Handler	1

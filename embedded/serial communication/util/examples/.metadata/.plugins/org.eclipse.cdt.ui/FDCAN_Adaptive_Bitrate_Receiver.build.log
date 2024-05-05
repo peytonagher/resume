@@ -1,0 +1,10 @@
+18:40:59 **** Incremental Build of configuration Debug for project FDCAN_Adaptive_Bitrate_Receiver ****
+make -j7 all 
+arm-none-eabi-size  FDCAN_Adaptive_Bitrate_Receiver.elf 
+   text	   data	    bss	    dec	    hex	filename
+  26952	    104	   2512	  29568	   7380	FDCAN_Adaptive_Bitrate_Receiver.elf
+Finished building: default.size.stdout
+ 
+
+18:40:59 Build Finished. 0 errors, 0 warnings. (took 275ms)
+

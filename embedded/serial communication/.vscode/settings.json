@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "*.json": "jsonc",
+        "*.tpp": "c",
+        "main_peyton.h": "c",
+        "stm32h5xx_hal.h": "c",
+        "stm32h5xx_hal_conf.h": "c",
+        "stm32h5xx_hal_fdcan.h": "c",
+        "stdio.h": "c"
+    }
+}

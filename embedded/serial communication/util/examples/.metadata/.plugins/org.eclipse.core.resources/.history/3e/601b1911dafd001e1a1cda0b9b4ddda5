@@ -1,0 +1,824 @@
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * @file           : main.c
+  * @brief          : Main program body
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2024 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+#include "stdio.h"
+CRC_HandleTypeDef hcrc;
+
+FDCAN_HandleTypeDef hfdcan1;
+FDCAN_HandleTypeDef hfdcan2;
+
+/* USER CODE BEGIN PV */
+
+/* USER CODE END PV */
+
+/* Private function prototypes -----------------------------------------------*/
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+//static void MX_FDCAN2_Init(void);
+static void MX_ICACHE_Init(void);
+static void MX_FDCAN1_Init(void);
+static void MX_FLASH_Init(void);
+static void MX_CRC_Init(void);
+/* USER CODE BEGIN PFP */
+
+/* USER CODE END PFP */
+uint8_t messageRecieved = 0; //checks to see if message is received
+uint8_t buttonClicked = 0; //checks to see if the button is clicked
+uint8_t LED_on = 0; //checks to see if green LED is on.
+
+typedef struct
+{
+  uint32_t id;
+  uint8_t dataLength;
+  uint8_t data[64];
+} FDCAN_Message_64;
+
+CRC_HandleTypeDef hcrc;
+
+// FDCAN1 Defines
+FDCAN_Message msg8;
+FDCAN_HandleTypeDef hfdcan1;
+FDCAN_TxHeaderTypeDef   txHeader1;
+FDCAN_RxHeaderTypeDef   rxHeader1;
+uint8_t               txData1[8];
+uint8_t               rxData1[8];
+int freeSlotsBefore_fdcan1;
+int freeSlotsAfter_fdcan1;
+HAL_StatusTypeDef status1;
+
+// FDCAN2 Defines
+FDCAN_Message_64 msg64;
+FDCAN_HandleTypeDef hfdcan2;
+FDCAN_TxHeaderTypeDef   txHeader2;
+FDCAN_RxHeaderTypeDef   rxHeader2;
+uint8_t               txData2[64];
+uint8_t               rxData2[64];
+int freeSlotsBefore_fdcan2;
+int freeSlotsAfter_fdcan2;
+HAL_StatusTypeDef status2;
+
+int count = 0;
+uint8_t pinStatus = GPIO_PIN_RESET;
+
+
+HAL_StatusTypeDef FDCAN_SendMessage(FDCAN_Message* msg)
+/*Function Type: checks the status of the HAL Driver
+*Parameter: An 8 bit message
+*Return: Returns the status of HAL_driver.
+*Description: Takes a message of a particular data length and stores
+the message in a variable. Checks how many free elements can be added, then
+adds the elements into a queue. Once the message is added to the queue, it
+checks to see if number of free elements in the queue before is equal to
+the number of free elements in the Queue after the message has been added.
+Once that has been checked, the function returns the status HAL_OK if there
+are no issues and it transmits the messages.
+*/
+{
+  for (int i = 0; i < msg->dataLength; i++)
+  {
+  	// Populates data to new variable called txData.
+      txData1[i] = msg->data[i];
+  }
+  // Checks the number of free elements in the queue before adding the message.
+  freeSlotsBefore_fdcan1 = HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan1);
+  // Adds the message to the transmitting FIFO Queue
+  status1 = HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &txHeader1, txData1);
+
+  // Checks the number of free elements in the queue after adding the message.
+  freeSlotsAfter_fdcan1 = HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan1);
+  HAL_Delay(100);
+//    if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &txHeader1, txData1) != HAL_OK)
+  // Checks if the message was not successfully added to the Queue
+  if (status1 != HAL_OK)
+  {
+  	// printf("Failed to add message to TxFIFOQ.");
+
+  	// Prints an error message and returns the status 'Hal_ERROR'
+ 	    printf("Failed to add message to TxFIFOQ. Status: %d\n", status1);
+      return HAL_ERROR;
+  }
+  // Checks if the number of free elements in queue is the same as before
+  if (freeSlotsBefore_fdcan1 == freeSlotsAfter_fdcan1)
+  {
+      printf("Queue unchanged FDCAN1\n");
+      printf("Free slots: %d\n", freeSlotsAfter_fdcan1);
+  }
+  else
+  {
+      printf("Sent FDCAN1\n");
+  }
+
+
+  return HAL_OK;
+}
+
+
+
+HAL_StatusTypeDef FDCAN_SendMessage2(FDCAN_Message_64* msg)
+{
+ for (int i = 0; i < msg->dataLength; i++)
+ {
+     txData2[i] = msg->data[i];
+ }
+
+ freeSlotsBefore_fdcan2 = HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan2);
+ status2 = HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &txHeader2, txData2);
+ freeSlotsAfter_fdcan2 = HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan2);
+
+//    if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &txHeader2, txData2) != HAL_OK)
+ if (status2 != HAL_OK)
+ {
+ 	// printf("Failed to add message to TxFIFOQ.");
+	    printf("Failed to add message to TxFIFOQ. Status: %d\n", status2);
+     return HAL_ERROR;
+ }
+
+ if (freeSlotsBefore_fdcan2 == freeSlotsAfter_fdcan2)
+ {
+     printf("Queue unchanged FDCAN2\n");
+     printf("Free slots: %d\n", freeSlotsAfter_fdcan2);
+ }
+ else
+ {
+     printf("Sent FDCAN2\n");
+ }
+
+ return HAL_OK;
+}
+
+
+//
+void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
+{
+	/* Function Type: void
+	 * Parameters: HFDCAN being used, status of the interrupt in the FIFO0 Queue
+	 * Return: None
+	 * Description: A callback function that is triggered when the transmitted message
+	 * is added to the FIFO0 Queue. Gives confirmation that the message is received by
+	 * toggling the green LED light on the development board and prints out the message
+	 * that the message has been received. This works for low priority messages.
+	 */
+
+	/*Checks to see if the interrupt flag is at the status Reset. */
+  if ((RxFifo0ITs & FDCAN_IT_RX_FIFO0_NEW_MESSAGE) != RESET)
+  {
+      /* Retrieve RX message from RX FIFO0 and checks the status of the function.*/
+      if (HAL_FDCAN_GetRxMessage(hfdcan, FDCAN_RX_FIFO0, &rxHeader1, rxData1) != HAL_OK)
+      {
+          printf("Failed to get Rx Message\n");
+      	Error_Handler();
+      }
+
+      /*Gives a notification for the new message in FIFO0 */
+      if (HAL_FDCAN_ActivateNotification(hfdcan, FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0) != HAL_OK)
+      {
+          Error_Handler();
+      }
+      /*Prints out a message and toggles the green LED on the board*/
+//      if (rxHeader1.Identifier == 0x11){
+//    	  HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_4);
+//      }
+      printf("\n\nReceived FIFO0 id: %lX\n", txHeader1.Identifier);
+      printf("Data: ");
+
+      HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0); // green on-board LED
+
+
+      //HAL_GPIO_WritePin(GPIOG, GPIO_PIN_0, 1); // GPIO LED
+
+      /*Prints out the received data*/
+      for (int i = 0; i < txHeader1.DataLength; i++)
+      {
+          printf("%02X ", txData1[i]);
+      }
+      printf("\n");
+
+      messageRecieved = 1;
+
+  }
+
+}
+
+
+
+void HAL_FDCAN_RxFifo1Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo1ITs)
+{
+ // high priority messages
+ if ((RxFifo1ITs & FDCAN_IT_RX_FIFO1_NEW_MESSAGE) != RESET)
+ {
+ 		if (HAL_FDCAN_GetRxMessage(hfdcan, FDCAN_RX_FIFO1, &rxHeader2, rxData2) != HAL_OK)
+ 		{
+ 			printf("Failed to get Rx Message");
+ 			Error_Handler();
+ 		}
+ 		if (HAL_FDCAN_ActivateNotification(hfdcan, FDCAN_IT_RX_FIFO1_NEW_MESSAGE, 0) != HAL_OK)
+ 		{
+ 			Error_Handler();
+ 		}
+
+ 		printf("\nReceived FIFO1 id: %lX\n", txHeader2.Identifier);
+ 		printf("Data: ");
+
+ 		HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_4); // green on-board LED
+       HAL_GPIO_WritePin(GPIOG, GPIO_PIN_0, 1); // GPIO LED
+
+ 		for (int i = 0; i < txHeader2.DataLength; i++)
+ 		{
+ 			printf("%02X ", txData2[i]);
+ 		}
+ 		printf("\n");
+ 	}
+}
+
+
+int _write(int file, char *ptr, int len) // write function that allows the print statements to work.
+{
+  (void)file;
+  int dataIdx;
+
+  for (dataIdx = 0; dataIdx < len; dataIdx++)
+  {
+      ITM_SendChar(*ptr++);
+  }
+
+  return len;
+}
+
+
+
+int main(void)
+{
+    HAL_Init();
+    SystemClock_Config();
+    MX_GPIO_Init();
+    MX_FDCAN1_Init();
+    MX_FDCAN2_Init();
+    MX_ICACHE_Init();
+    MX_FLASH_Init();
+    MX_CRC_Init();
+
+    if (HAL_FDCAN_Start(&hfdcan1)!= HAL_OK)
+	{
+		Error_Handler();
+	}
+    if (HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+   if (HAL_FDCAN_Start(&hfdcan2)!= HAL_OK)
+   {
+       Error_Handler();
+   }
+   if (HAL_FDCAN_ActivateNotification(&hfdcan2, FDCAN_IT_RX_FIFO1_NEW_MESSAGE, 0) != HAL_OK)
+   {
+       Error_Handler();
+   }
+
+    msg8.id = 0x11;
+    msg8.dataLength = 8;
+    for (int i = 0; i < msg8.dataLength; i++)
+    {
+        msg8.data[i] = i;
+    }
+
+   msg64.id = 0x22;
+   msg64.dataLength = 64;
+   for (int i = 0; i < msg64.dataLength; i++)
+   {
+       msg64.data[i] = i;
+   }
+
+  txHeader1.Identifier = 0x11;
+	txHeader1.IdType = FDCAN_STANDARD_ID;
+	txHeader1.TxFrameType = FDCAN_DATA_FRAME;
+	txHeader1.DataLength = FDCAN_DLC_BYTES_8;
+	txHeader1.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	txHeader1.BitRateSwitch = FDCAN_BRS_ON;
+	txHeader1.FDFormat = FDCAN_CLASSIC_CAN;
+	txHeader1.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	txHeader1.MessageMarker = 0;
+
+	txHeader2.Identifier = 0x22;
+	txHeader2.IdType = FDCAN_STANDARD_ID;
+	txHeader2.TxFrameType = FDCAN_DATA_FRAME;
+	txHeader2.DataLength = FDCAN_DLC_BYTES_8;
+	txHeader2.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	txHeader2.BitRateSwitch = FDCAN_BRS_ON;
+	txHeader2.FDFormat = FDCAN_CLASSIC_CAN;
+	txHeader2.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	txHeader2.MessageMarker = 0;
+
+    while (1)
+    {
+    	if (messageRecieved){
+    					messageRecieved = 0;
+    	            	continue;
+    	            }
+//        msg8.id += 1;
+//        txHeader1.Identifier += 1;
+//        for (int i = 0; i < msg8.dataLength; i++)
+//        {
+//            msg8.data[i] += 0x01;
+//        }
+
+//        msg64.id += 1;
+//        txHeader2.Identifier += 1;
+//        for (int i = 0; i < msg64.dataLength; i++)
+//        {
+//            msg64.data[i] += 0x01;
+//        }
+
+       // printf("\nID: %lX\n", msg8.id);
+//        for (int i = 0; i < msg8.dataLength; i++)
+//        {
+//            printf("%02X ", msg8.data[i]);
+//        }
+        //printf("\n");
+
+//        printf("\nID: %lX\n", msg64.id);
+//        for (int i = 0; i < msg64.dataLength; i++)
+//        {
+//            printf("%02X ", msg64.data[i]);
+//        }
+//        printf("\n");
+
+        GPIO_PinState pinStatus = HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_3);
+
+        if (pinStatus == GPIO_PIN_RESET )
+        {
+//            printf("not sent :( ");
+            HAL_GPIO_WritePin(GPIOG, GPIO_PIN_2, 0);
+            HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_4);
+            if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0)== GPIO_PIN_SET){
+            	HAL_Delay(500);
+            }
+
+//        	printf("\nID: %lX\n", msg8.id);
+//            if (FDCAN_SendMessage(&msg8) != HAL_OK){
+//            	 printf("not sent :) \n");
+//            }
+        	//buttonClicked = 1;
+        	//printf("button not clicked \n");
+
+
+        }
+        else if(pinStatus == GPIO_PIN_SET )
+        {
+            HAL_GPIO_WritePin(GPIOG, GPIO_PIN_2, 1);
+
+            msg64.id += 1;
+            txHeader2.Identifier += 1;
+            for (int i = 0; i < msg64.dataLength; i++)
+            {
+                msg64.data[i] += 0x01;
+            }
+
+            printf("\nID: %lX\n", msg64.id);
+
+        	//FDCAN_SendMessage(&msg8);
+            //printf("sent :) \n");
+            //HAL_Delay(100);
+        	if (FDCAN_SendMessage2(&msg64)!= HAL_OK){
+        		printf("not sent \n");
+        	}
+        	else{
+
+        		printf("sent and received \n");
+        		//HAL_Delay(10);
+
+        	}
+
+        }
+            //FDCAN_SendMessage2(&msg64);
+
+    }
+    count += 1;
+}
+
+///////////////////////////  GPIO PINS ////////////////////////////
+//	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0); // green on-board LED
+//	HAL_GPIO_TogglePin(GPIOF, GPIO_PIN_4); // yellow on-board LED
+//	HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_4); // red on-board LED
+//
+//	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+//	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_15);
+//	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
+//	HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_9);
+//	HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_14);
+//	HAL_GPIO_TogglePin(GPIOF, GPIO_PIN_3);
+//	HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_0);
+//	HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_1);
+//	HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_2);
+//	HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_3);
+//	HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_12);
+///////////////////////////////////////////////////////////////////
+
+
+
+
+/**
+  * @brief System Clock Configuration
+  * @retval None
+  */
+void SystemClock_Config(void)
+{
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
+  /** Configure the main internal regulator output voltage
+  */
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
+
+  while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
+
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_CSI;
+  RCC_OscInitStruct.CSIState = RCC_CSI_ON;
+  RCC_OscInitStruct.CSICalibrationValue = RCC_CSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLL1_SOURCE_CSI;
+  RCC_OscInitStruct.PLL.PLLM = 1;
+  RCC_OscInitStruct.PLL.PLLN = 125;
+  RCC_OscInitStruct.PLL.PLLP = 2;
+  RCC_OscInitStruct.PLL.PLLQ = 2;
+  RCC_OscInitStruct.PLL.PLLR = 2;
+  RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1_VCIRANGE_2;
+  RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1_VCORANGE_WIDE;
+  RCC_OscInitStruct.PLL.PLLFRACN = 0;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Initializes the CPU, AHB and APB buses clocks
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2
+                              |RCC_CLOCKTYPE_PCLK3;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB3CLKDivider = RCC_HCLK_DIV1;
+
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+/**
+  * @brief CRC Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_CRC_Init(void)
+{
+
+  /* USER CODE BEGIN CRC_Init 0 */
+  /* USER CODE END CRC_Init 0 */
+
+  /* USER CODE BEGIN CRC_Init 1 */
+  /* USER CODE END CRC_Init 1 */
+  hcrc.Instance = CRC;
+  hcrc.Init.DefaultPolynomialUse = DEFAULT_POLYNOMIAL_ENABLE;
+  hcrc.Init.DefaultInitValueUse = DEFAULT_INIT_VALUE_ENABLE;
+  hcrc.Init.InputDataInversionMode = CRC_INPUTDATA_INVERSION_NONE;
+  hcrc.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE;
+  hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_BYTES;
+  if (HAL_CRC_Init(&hcrc) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN CRC_Init 2 */
+  /* USER CODE END CRC_Init 2 */
+
+}
+
+/**
+  * @brief FDCAN1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_FDCAN1_Init(void)
+{
+
+  /* USER CODE BEGIN FDCAN1_Init 0 */
+
+  /* USER CODE END FDCAN1_Init 0 */
+
+  /* USER CODE BEGIN FDCAN1_Init 1 */
+
+  /* USER CODE END FDCAN1_Init 1 */
+  hfdcan1.Instance = FDCAN1;
+  hfdcan1.Init.ClockDivider = FDCAN_CLOCK_DIV1;
+  hfdcan1.Init.FrameFormat = FDCAN_FRAME_FD_BRS;
+  hfdcan1.Init.Mode = FDCAN_MODE_EXTERNAL_LOOPBACK ;
+  hfdcan1.Init.AutoRetransmission = ENABLE;
+  hfdcan1.Init.TransmitPause = DISABLE;
+  hfdcan1.Init.ProtocolException = DISABLE;
+  hfdcan1.Init.NominalPrescaler = 1;
+  hfdcan1.Init.NominalSyncJumpWidth = 1; //16
+  hfdcan1.Init.NominalTimeSeg1 = 16; //63
+  hfdcan1.Init.NominalTimeSeg2 = 8; //16
+  hfdcan1.Init.DataPrescaler = 1;
+  hfdcan1.Init.DataSyncJumpWidth = 1; //4
+  hfdcan1.Init.DataTimeSeg1 = 16; //15
+  hfdcan1.Init.DataTimeSeg2 = 8; //4
+  hfdcan1.Init.StdFiltersNbr = 0; //1
+  hfdcan1.Init.ExtFiltersNbr = 0;
+  hfdcan1.Init.TxFifoQueueMode = FDCAN_TX_FIFO_OPERATION;
+  if (HAL_FDCAN_Init(&hfdcan1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN FDCAN1_Init 2 */
+	FDCAN_FilterTypeDef sFilterConfig;
+
+    sFilterConfig.IdType = FDCAN_STANDARD_ID;
+    sFilterConfig.FilterIndex = 0;
+    sFilterConfig.FilterType = FDCAN_FILTER_MASK;
+    sFilterConfig.FilterConfig = FDCAN_FILTER_TO_RXFIFO0;
+    sFilterConfig.FilterID1 = 0x11;
+    sFilterConfig.FilterID2 = 0x22;
+    if (HAL_FDCAN_ConfigFilter(&hfdcan1, &sFilterConfig) != HAL_OK)
+    {
+        /* Filter configuration Error */
+        Error_Handler();
+    }
+
+	if (HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0) != HAL_OK)
+	{
+		Error_Handler();
+	}
+  /* USER CODE END FDCAN1_Init 2 */
+
+}
+
+/**
+  * @brief FDCAN2 Initialization Function
+  * @param None
+  * @retval None
+  */
+//static void MX_FDCAN2_Init(void)
+//{
+//
+//  /* USER CODE BEGIN FDCAN2_Init 0 */
+//
+//  /* USER CODE END FDCAN2_Init 0 */
+//
+//  /* USER CODE BEGIN FDCAN2_Init 1 */
+//
+//  /* USER CODE END FDCAN2_Init 1 */
+//  hfdcan2.Instance = FDCAN2;
+//  hfdcan2.Init.ClockDivider = FDCAN_CLOCK_DIV1;
+//  hfdcan2.Init.FrameFormat = FDCAN_FRAME_FD_BRS;
+//  hfdcan2.Init.Mode = FDCAN_MODE_EXTERNAL_LOOPBACK;
+//  hfdcan2.Init.AutoRetransmission = ENABLE;
+//  hfdcan2.Init.TransmitPause = DISABLE;
+//  hfdcan2.Init.ProtocolException = DISABLE;
+//  hfdcan2.Init.NominalPrescaler = 1;
+//  hfdcan2.Init.NominalSyncJumpWidth = 16;
+//  hfdcan2.Init.NominalTimeSeg1 = 63;
+//  hfdcan2.Init.NominalTimeSeg2 = 16;
+//  hfdcan2.Init.DataPrescaler = 1;
+//  hfdcan2.Init.DataSyncJumpWidth = 4;
+//  hfdcan2.Init.DataTimeSeg1 = 15;
+//  hfdcan2.Init.DataTimeSeg2 = 4;
+//  hfdcan2.Init.StdFiltersNbr = 0;
+//  hfdcan2.Init.ExtFiltersNbr = 0;
+//  hfdcan2.Init.TxFifoQueueMode = FDCAN_TX_FIFO_OPERATION;
+//  if (HAL_FDCAN_Init(&hfdcan2) != HAL_OK)
+//  {
+//    Error_Handler();
+//  }
+////  /* USER CODE BEGIN FDCAN2_Init 2 */
+////	FDCAN_FilterTypeDef sFilterConfig;
+////
+////    sFilterConfig.IdType = FDCAN_STANDARD_ID;
+////    sFilterConfig.FilterIndex = 0;
+////    sFilterConfig.FilterType = FDCAN_FILTER_MASK;
+////    sFilterConfig.FilterConfig = FDCAN_FILTER_TO_RXFIFO1;
+////    sFilterConfig.FilterID1 = 0x11;
+////    sFilterConfig.FilterID2 = 0x7FF;
+//
+//    if (HAL_FDCAN_ConfigFilter(&hfdcan2, &sFilterConfig) != HAL_OK)
+//    {
+//        /* Filter configuration Error */
+//        Error_Handler();
+//    }
+//
+//	if (HAL_FDCAN_ActivateNotification(&hfdcan2, FDCAN_IT_RX_FIFO1_NEW_MESSAGE, 0) != HAL_OK)
+//	{
+//		Error_Handler();
+//	}
+//
+//  /* USER CODE END FDCAN2_Init 2 */
+//
+//}
+
+/**
+  * @brief FLASH Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_FLASH_Init(void)
+{
+
+  /* USER CODE BEGIN FLASH_Init 0 */
+  /* USER CODE END FLASH_Init 0 */
+
+  /* USER CODE BEGIN FLASH_Init 1 */
+  /* USER CODE END FLASH_Init 1 */
+  if (HAL_FLASH_Unlock() != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_FLASH_Lock() != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN FLASH_Init 2 */
+  /* USER CODE END FLASH_Init 2 */
+
+}
+
+/**
+  * @brief ICACHE Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_ICACHE_Init(void)
+{
+
+  /* USER CODE BEGIN ICACHE_Init 0 */
+  /* USER CODE END ICACHE_Init 0 */
+
+  /* USER CODE BEGIN ICACHE_Init 1 */
+  /* USER CODE END ICACHE_Init 1 */
+
+  /** Enable instruction cache in 1-way (direct mapped cache)
+  */
+  if (HAL_ICACHE_ConfigAssociativityMode(ICACHE_1WAY) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_ICACHE_Enable() != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN ICACHE_Init 2 */
+  /* USER CODE END ICACHE_Init 2 */
+
+}
+
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+/* USER CODE BEGIN MX_GPIO_Init_1 */
+/* USER CODE END MX_GPIO_Init_1 */
+
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOF_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOG_CLK_ENABLE();
+  __HAL_RCC_GPIOE_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOF, GPIO_PIN_3|LD2_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5|GPIO_PIN_15, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, LD1_Pin|GPIO_PIN_2, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOG, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|LD3_Pin
+                          |GPIO_PIN_12, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9|GPIO_PIN_14, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : PC13 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PF3 LD2_Pin */
+  GPIO_InitStruct.Pin = GPIO_PIN_3|LD2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PA5 PA15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_15;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : LD1_Pin PB2 */
+  GPIO_InitStruct.Pin = LD1_Pin|GPIO_PIN_2;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PG0 PG1 PG2 LD3_Pin
+                           PG12 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|LD3_Pin
+                          |GPIO_PIN_12;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PE9 */
+  GPIO_InitStruct.Pin = GPIO_PIN_9;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PE14 */
+  GPIO_InitStruct.Pin = GPIO_PIN_14;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PG3 */
+  GPIO_InitStruct.Pin = GPIO_PIN_3;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+
+/* USER CODE BEGIN MX_GPIO_Init_2 */
+/* USER CODE END MX_GPIO_Init_2 */
+}
+
+/* USER CODE BEGIN 4 */
+/* USER CODE END 4 */
+
+/**
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
+void Error_Handler(void)
+{
+  /* USER CODE BEGIN Error_Handler_Debug */
+  /* User can add his own implementation to report the HAL error return state */
+  __disable_irq();
+  while (1)
+  {
+  }
+  /* USER CODE END Error_Handler_Debug */
+}
+
+#ifdef  USE_FULL_ASSERT
+/**
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
+void assert_failed(uint8_t *file, uint32_t line)
+{
+  /* USER CODE BEGIN 6 */
+  /* User can add his own implementation to report the file name and line number,
+     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  /* USER CODE END 6 */
+}
+#endif /* USE_FULL_ASSERT */

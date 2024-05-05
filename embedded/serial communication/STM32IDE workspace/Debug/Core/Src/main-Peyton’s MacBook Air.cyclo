@@ -1,0 +1,12 @@
+../Core/Src/main.c:76:19:FDCAN_SendMessage	3
+../Core/Src/main.c:111:6:HAL_FDCAN_RxFifo0Callback	4
+../Core/Src/main.c:139:6:HAL_FDCAN_RxFifo1Callback	4
+../Core/Src/main.c:172:5:main	2
+../Core/Src/main.c:262:6:SystemClock_Config	4
+../Core/Src/main.c:316:13:MX_CRC_Init	2
+../Core/Src/main.c:344:13:MX_FDCAN1_Init	6
+../Core/Src/main.c:413:13:MX_FDCAN2_Init	6
+../Core/Src/main.c:482:13:MX_FLASH_Init	3
+../Core/Src/main.c:508:13:MX_ICACHE_Init	3
+../Core/Src/main.c:537:13:MX_GPIO_Init	1
+../Core/Src/main.c:623:6:Error_Handler	1
